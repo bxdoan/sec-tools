@@ -4,7 +4,7 @@ combine tools for security using [projectdiscovery](https://github.com/projectdi
 - [nuclei](https://github.com/projectdiscovery/nuclei)
 - [subfinder](https://github.com/projectdiscovery/subfinder)
 - [naabu](https://github.com/projectdiscovery/naabu)
-- 
+- [katana](https://github.com/projectdiscovery/katana)
 
 ## Usage
 ```shell
