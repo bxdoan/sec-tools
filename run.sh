@@ -22,8 +22,8 @@ today=$(date '+%Y-%m-%d_%H:%M:%S')
 file_name_log="log/${url}_${today}.log"
 
 
-#nuclei -u $url                                          | sed -r "$color_fmt" >> $file_name_log 2>&1
-#print_done "nuclei"
+nuclei -u $url                                          | sed -r "$color_fmt" >> $file_name_log 2>&1
+print_done "nuclei"
 docker run projectdiscovery/subfinder:latest -d $url    | sed -r "$color_fmt" >> $file_name_log 2>&1
 print_done "subfinder"
 docker run -it projectdiscovery/naabu:latest -host $url | sed -r "$color_fmt" >> $file_name_log 2>&1
