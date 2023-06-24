@@ -21,7 +21,7 @@ elif [ "$1" = "-h" ]; then
     echo "$doc_str"
     exit 1
 elif [ "$1" = "-u" ]; then
-    list_url+=("$1")
+    list_url+=("$2")
 else
     list_url+=("$1")
 fi
@@ -31,13 +31,12 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-today=$(date '+%Y-%m-%d_%H:%M:%S')
 
 function print_done() {
-    echo "==============" >> $file_name_log
-    echo "$1 done" >> $file_name_log
-    echo "==============" >> $file_name_log
-    echo "\n\n\n" >> $file_name_log
+    echo "==============" >> $2
+    echo "$1 done"        >> $2
+    echo "==============" >> $2
+    echo "\n\n\n"         >> $2
 }
 
 
@@ -46,15 +45,17 @@ for url in "${list_url[@]}"
 do
     # Perform desired action on each URL, such as curling it
     echo "process $url"
+    today=$(date '+%Y-%m-%d_%H:%M:%S')
     file_name_log="log/${url}_${today}.log"
     #docker run -it --rm -v osmws:/root/.osmedeus/workspaces j3ssie/osmedeus:latest scan -f fast -t "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    #print_done "osmedeus"  docker run projectdiscovery/nuclei:latest -u "$url"               | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "nuclei"
+    #print_done "osmedeus"
+    docker run projectdiscovery/nuclei:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
+    print_done "nuclei" file_name_log
     docker run projectdiscovery/subfinder:latest -d "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "subfinder"
+    print_done "subfinder" file_name_log
     docker run projectdiscovery/naabu:latest -host "$url"  | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "naabu"
+    print_done "naabu" file_name_log
     docker run projectdiscovery/katana:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "katana"
+    print_done "katana" file_name_log
 done
 
