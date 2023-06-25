@@ -18,3 +18,10 @@ Usage: ./run.sh [url] [arguments]
 ```
 
 the result will be saved in `log` directory
+
+# access the docker via bash if you want to see a raw result of the previous or current scan
+```shell
+docker ps
+
+docker exec -it <container-id> /bin/sh
+```
