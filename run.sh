@@ -50,12 +50,12 @@ do
     #docker run -it --rm -v osmws:/root/.osmedeus/workspaces j3ssie/osmedeus:latest scan -f fast -t "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     #print_done "osmedeus"
     docker run projectdiscovery/nuclei:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "nuclei" file_name_log
+    print_done "nuclei" $file_name_log
     docker run projectdiscovery/subfinder:latest -d "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "subfinder" file_name_log
+    print_done "subfinder" $file_name_log
     docker run projectdiscovery/naabu:latest -host "$url"  | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "naabu" file_name_log
+    print_done "naabu" $file_name_log
     docker run projectdiscovery/katana:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "katana" file_name_log
+    print_done "katana" $file_name_log
 done
 
