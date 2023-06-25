@@ -3,7 +3,7 @@ trap "exit" INT
 SH_DIR=`cd $(dirname "$BASH_SOURCE") && pwd`
 RETRO_DIR=`cd $SH_DIR/.. && pwd`
 nuclei_docker_dir="/root/fuzzing-templates"
-templates_dir="$RETRO_DIR/fuzzing-templates"
+fuzzing_templates="$RETRO_DIR/fuzzing-templates"
 
 color_fmt="s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"
 doc_str="Usage: ./run.sh [url] [arguments]
@@ -46,8 +46,6 @@ function docker_pull() {
     docker pull projectdiscovery/katana:latest
 }
 
-docker_pull()
-
 function print_done() {
     echo "==============" >> $2
     echo "$1 done"        >> $2
@@ -66,11 +64,13 @@ function process() {
     printf "Process url: $url\n"
     now_log=$(date '+%Y-%m-%d_%H:%M:%S')
     file_name_log="${target_log}/${url}_${now_log}.log"
-    docker run -v "$templates_dir:$nuclei_docker_dir" projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
+    docker run -v "$fuzzing_templates:$nuclei_docker_dir" projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "nuclei" $file_name_log
     docker run projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
 }
+
+docker_pull()
 
 for target in "${list_target[@]}"
 do
