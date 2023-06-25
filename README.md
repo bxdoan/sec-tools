@@ -8,7 +8,13 @@ combine tools for security using [projectdiscovery](https://github.com/projectdi
 
 ## Usage
 ```shell
-./run.sh example.com
+Usage: ./run.sh [url] [arguments]
+    url: example.com
+    arguments: all arguments, default is None
+    example: ./run.sh example.com
+             ./run.sh -u example.com
+             ./run.sh -f list_target.txt
+             ./run.sh -h
 ```
 
 the result will be saved in `log` directory

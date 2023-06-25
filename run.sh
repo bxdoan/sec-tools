@@ -1,5 +1,6 @@
 #!/bin/sh
-mkdir -p log
+trap "exit" INT
+
 color_fmt="s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"
 doc_str="Usage: ./run.sh [url] [arguments]
     url: example.com
@@ -10,20 +11,20 @@ doc_str="Usage: ./run.sh [url] [arguments]
              ./run.sh -h
 "
 
-list_url=()
 # if have -f argument, use it as file name, load list url from file
+list_target=()
 if [ "$1" = "-f" ]; then
-    # Read file into list_url variable
+    # Read file into list_target variable
     while IFS= read -r line; do
-        list_url+=("$line")
+        list_target+=("$line")
     done < "$2"
 elif [ "$1" = "-h" ]; then
     echo "$doc_str"
     exit 1
 elif [ "$1" = "-u" ]; then
-    list_url+=("$2")
+    list_target+=("$2")
 else
-    list_url+=("$1")
+    list_target+=("$1")
 fi
 
 if [ $# -eq 0 ]; then
@@ -31,6 +32,8 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# prepare log directory
+mkdir -p log
 
 function print_done() {
     echo "==============" >> $2
@@ -39,23 +42,39 @@ function print_done() {
     echo "\n\n\n"         >> $2
 }
 
+function mkdir_target() {
+  now_log=$(date '+%Y-%m-%d_%H:%M:%S')
+  target_log="log/$1_${now_log}"
+  mkdir -p $target_log
+}
 
-# Iterate through each URL in list_url array
-for url in "${list_url[@]}"
-do
-    # Perform desired action on each URL, such as curling it
-    echo "process $url"
-    today=$(date '+%Y-%m-%d_%H:%M:%S')
-    file_name_log="log/${url}_${today}.log"
-    #docker run -it --rm -v osmws:/root/.osmedeus/workspaces j3ssie/osmedeus:latest scan -f fast -t "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    #print_done "osmedeus"
-    docker run projectdiscovery/nuclei:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
+function process() {
+    url=$1
+    printf "Process url: $url\n"
+    now_log=$(date '+%Y-%m-%d_%H:%M:%S')
+    file_name_log="${target_log}/${url}_${now_log}.log"
+    docker run projectdiscovery/nuclei:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "nuclei" $file_name_log
-    docker run projectdiscovery/subfinder:latest -d "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "subfinder" $file_name_log
-    docker run projectdiscovery/naabu:latest -host "$url"  | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "naabu" $file_name_log
-    docker run projectdiscovery/katana:latest -u "$url"    | sed -r "$color_fmt" >> $file_name_log 2>&1
+    docker run projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
-done
+}
 
+for target in "${list_target[@]}"
+do
+  printf "Process target: $target\n"
+  mkdir_target "$target"
+  # Get subdomains of target
+  list_sub_target=$(docker run projectdiscovery/subfinder:latest -d "$target" | sed -r "$color_fmt")
+  echo $list_sub_target
+  output_with_spaces=$(tr '\n' ' ' <<< "$list_sub_target")
+  list_sub_url=($output_with_spaces)
+
+  # Iterate through each URL in list_sub_url array
+  for url in "${list_sub_url[@]}"
+  do
+      # Perform desired action on each URL, such as curling it
+      process "$url"
+      sl -e
+  done
+  sl -e
+done

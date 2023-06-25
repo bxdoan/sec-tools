@@ -132,4 +132,4 @@ dmypy.json
 tmp/
 log/
 
-list_target.txt
+list*.txt
