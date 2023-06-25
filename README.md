@@ -25,3 +25,15 @@ docker ps
 
 docker exec -it <container-id> /bin/sh
 ```
+
+or
+```shell
+./docker.sh image_name [arguments]
+description: run docker image with /bin/sh
+image_name: docker image name
+arguments: all arguments, default is None
+example: ./docker.sh nuclei
+         ./docker.sh naabu
+         ./docker.sh katana
+         ./docker.sh subfinder
+```

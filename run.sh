@@ -57,11 +57,11 @@ function process() {
     printf "Process url: $url\n"
     now_log=$(date '+%Y-%m-%d_%H:%M:%S')
     file_name_log="${target_log}/${url}_${now_log}.log"
-    docker run -v "$fuzzing_templates:$nuclei_docker_dir" --name nuclei projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
+    docker run -v "$fuzzing_templates:$nuclei_docker_dir" projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "nuclei" $file_name_log
-    docker run --name naabu projectdiscovery/naabu:latest -host "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
+    docker run projectdiscovery/naabu:latest -host "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
-    docker run --name katana projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
+    docker run projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
 }
 
@@ -70,7 +70,7 @@ do
   printf "Process target: $target\n"
   mkdir_target "$target"
   # Get subdomains of target
-  list_sub_target=$(docker run --name subfinder projectdiscovery/subfinder:latest -d "$target" | sed -r "$color_fmt")
+  list_sub_target=$(docker run projectdiscovery/subfinder:latest -d "$target" | sed -r "$color_fmt")
   echo $list_sub_target
   output_with_spaces=$(tr '\n' ' ' <<< "$list_sub_target")
   list_sub_url=($output_with_spaces)
