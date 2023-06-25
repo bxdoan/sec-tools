@@ -17,9 +17,17 @@ Usage: ./run.sh [url] [arguments]
              ./run.sh -h
 ```
 
+
+Example `list_target.txt`
+```shell
+example.com
+example1.com
+example2.com
+```
+
 the result will be saved in `log` directory
 
-# access the docker via bash if you want to see a raw result of the previous or current scan
+Access the docker via bash if you want to see a raw result of the previous or current scan
 ```shell
 docker ps
 
