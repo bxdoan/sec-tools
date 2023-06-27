@@ -60,7 +60,7 @@ function process() {
     docker run -v "$fuzzing_templates:$nuclei_docker_dir" projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "nuclei" $file_name_log
     docker run projectdiscovery/naabu:latest -host "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
-    print_done "katana" $file_name_log
+    print_done "naabu" $file_name_log
     docker run projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
 }
@@ -80,7 +80,5 @@ do
   do
       # Perform desired action on each URL, such as curling it
       process "$url"
-      sl -e
   done
-  sl -e
 done
