@@ -57,10 +57,13 @@ function process() {
     printf "Process url: $url\n"
     now_log=$(date '+%Y-%m-%d_%H:%M:%S')
     file_name_log="${target_log}/${url}_${now_log}.log"
-    docker run -v "$fuzzing_templates:$nuclei_docker_dir" projectdiscovery/nuclei:latest -u "$url" -t "$nuclei_docker_dir" | sed -r "$color_fmt" >> $file_name_log 2>&1
+    echo "docker run projectdiscovery/nuclei:latest -u $url"
+    docker run projectdiscovery/nuclei:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "nuclei" $file_name_log
+    echo "docker run projectdiscovery/naabu:latest -host $url"
     docker run projectdiscovery/naabu:latest -host "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "naabu" $file_name_log
+    echo "docker run projectdiscovery/katana:latest -u $url"
     docker run projectdiscovery/katana:latest -u "$url" | sed -r "$color_fmt" >> $file_name_log 2>&1
     print_done "katana" $file_name_log
 }
