@@ -52,6 +52,14 @@ function mkdir_target() {
   mkdir -p $target_log
 }
 
+function setup_docker() {
+    docker pull projectdiscovery/subfinder:latest
+    docker pull projectdiscovery/nuclei:latest
+    docker pull projectdiscovery/naabu:latest
+    docker pull projectdiscovery/katana:latest
+}
+
+
 function process() {
     url=$1
     printf "Process url: $url\n"
@@ -68,8 +76,11 @@ function process() {
     print_done "katana" $file_name_log
 }
 
+setup_docker
+
 for target in "${list_target[@]}"
 do
+  target=$(echo "$target" | sed -r "s/www\.//g")
   printf "Process target: $target\n"
   mkdir_target "$target"
   # Get subdomains of target
@@ -82,6 +93,7 @@ do
   for url in "${list_sub_url[@]}"
   do
       # Perform desired action on each URL, such as curling it
+      url=$(echo "$url" | sed -r "s/www\.//g")
       process "$url"
   done
 done
