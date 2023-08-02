@@ -13,6 +13,7 @@ pandas = "*"
 pywifi-controls = "*"
 colorama = "*"
 termcolor = "*"
+redis = "*"
 
 [requires]
 python_version = "3.10"
