@@ -2,8 +2,6 @@
 trap "exit" INT
 SH_DIR=`cd $(dirname "$BASH_SOURCE") && pwd`
 RETRO_DIR=`cd $SH_DIR/.. && pwd`
-nuclei_docker_dir="/root/fuzzing-templates"
-fuzzing_templates="$RETRO_DIR/fuzzing-templates"
 
 color_fmt="s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"
 doc_str="Usage: ./run.sh [url] [arguments]
