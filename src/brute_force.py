@@ -8,7 +8,7 @@ from src.config import get_logger
 logger = get_logger(__name__)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PW_LIST = f'{HERE}/../wordlists/ignis-10K.txt'
+PW_LIST = f'{HERE}/../wordlists/ignis-10M.txt'
 HEADERS = {
     'Content-Type': 'application/json'
 }

