@@ -17,15 +17,7 @@ def decorate(_func=None, **options):
             e_obj = res  = None
             try:
                 new_args = [a.strip() for a in args]
-                res = func(*args, **kwargs)
-            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-                # ConnectionError, Timeout
-                e_obj = e
-                raise e
-            except requests.exceptions.HTTPError as e:
-                # 4xx, 5xx, or 2xx
-                e_obj = e
-                raise e
+                res = func(*new_args, **kwargs)
             except Exception as e:
                 e_obj = e
                 raise e
@@ -49,12 +41,13 @@ def decorate(_func=None, **options):
 def decorator(func):
     def inner(*args, **kwargs):
         new_args = [a.strip() for a in args]
-        func(*new_args, **kwargs)
+        res = func(*new_args, **kwargs)
+        return res
 
     return inner
 
 
-@decorate
+@decorator
 def print_don(name: str =''):
     print(f'{name}')
 
