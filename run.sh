@@ -60,7 +60,7 @@ function setup_docker() {
 
 function process() {
     url=$1
-    printf "Process url: $url\n"
+    printf "Process subdomains url: $url\n"
     now_log=$(date '+%Y-%m-%d_%H:%M:%S')
     file_name_log="${target_log}/${url}_${now_log}.log"
     echo "docker run projectdiscovery/nuclei:latest -u $url"
@@ -83,6 +83,7 @@ do
   mkdir_target "$target"
   # Get subdomains of target
   list_sub_target=$(docker run projectdiscovery/subfinder:latest -d "$target" | sed -r "$color_fmt")
+  echo "Subdomains of $target"
   echo $list_sub_target
   output_with_spaces=$(tr '\n' ' ' <<< "$list_sub_target")
   list_sub_url=($output_with_spaces)
