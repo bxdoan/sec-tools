@@ -83,7 +83,7 @@ do
   mkdir_target "$target"
   # Get subdomains of target
   list_sub_target=$(docker run projectdiscovery/subfinder:latest -d "$target" | sed -r "$color_fmt")
-  echo "Subdomains of $target"
+  printf "Subdomains of $target\n"
   echo $list_sub_target
   output_with_spaces=$(tr '\n' ' ' <<< "$list_sub_target")
   list_sub_url=($output_with_spaces)
