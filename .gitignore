@@ -133,3 +133,6 @@ tmp/
 log/
 
 list*.txt
+
+Pipfile.lock
+data/
