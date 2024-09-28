@@ -1,5 +1,8 @@
+import asyncio
 import hashlib
+import aiofiles
 import os
+import time
 import bcrypt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,19 +23,48 @@ def sha512_hash(password):
 def bcrypt_hash(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
-def save_password_and_all_hash(from_idx=0):
-    # load password list from file
-    with open(PW_LIST, 'r', encoding="utf8") as f:
-        all_passwords = f.readlines()
-        all_passwords = [password.strip() for password in all_passwords]
+async def process_chunk(start, end, filename):
+    try:
+        async with aiofiles.open(filename, 'r', encoding='utf-8') as file:
+            await file.seek(start)
+            lines = await file.read(end - start)
+            lines = lines.splitlines()
+            lines = [line.strip() for line in lines]
+            async with aiofiles.open(f'{HERE}/../data/hashes.txt', 'a', encoding='utf-8') as f:
+                for password in lines:
+                    line_text = f'{password},{md5_hash(password)},{sha1_hash(password)},{sha256_hash(password)},{sha512_hash(password)},{bcrypt_hash(password)}'
+                    await f.write(line_text + '\n')
+    except Exception as e:
+        print(f"Error processing chunk: {e}")
 
-    passwords = all_passwords[from_idx:] if from_idx > 0 else all_passwords
-    for idx, password in enumerate(passwords):
-        line_text = f'{password},{md5_hash(password)},{sha1_hash(password)},{sha256_hash(password)},{sha512_hash(password)},{bcrypt_hash(password)}'
-        print(f"{from_idx+idx+1}/{all_passwords} : {line_text}")
-        with open(f'{HERE}/../data/pass_hashes.txt', 'a') as f:
-            f.write(line_text + '\n')
+
+def chunkify(filename, size=1024*1024*10):
+    file_end = os.path.getsize(filename)
+    with open(filename, 'rb') as file:
+        chunk_end = file.tell()
+        while True:
+            chunk_start = chunk_end
+            file.seek(size, 1)
+            file.readline()
+            chunk_end = file.tell()
+            yield chunk_start, chunk_end
+            if chunk_end >= file_end:
+                break
+
+async def main(filename):
+    tasks = []
+    for chunk_start, chunk_end in chunkify(filename):
+        file_end = os.path.getsize(filename)
+        print(f"Processing chunk: {chunk_start} - {chunk_end} of {file_end}")
+        task = asyncio.create_task(process_chunk(chunk_start, chunk_end, filename))
+        tasks.append(task)
+
+    print(f"Processing {len(tasks)} chunks")
+    await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
     # save password and all hash
-    save_password_and_all_hash(from_idx=354)
+    start_time = time.time()
+    asyncio.run(main(PW_LIST))
+    end_time = time.time()
+    print(f"Time elapsed in minutes: {(end_time - start_time) / 60}")
