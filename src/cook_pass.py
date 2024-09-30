@@ -58,10 +58,9 @@ async def main(filename, des_file_path='hashes.txt'):
     if not os.path.exists(des_file_path):
         with open(des_file_path, 'w') as f:
             f.write('password,md5,sha1,sha256,sha512,bcrypt\n')
-
+    file_end = os.path.getsize(filename)
     tasks = []
     for chunk_start, chunk_end in chunkify(filename):
-        file_end = os.path.getsize(filename)
         print(f"Processing chunk: {chunk_start} - {chunk_end} of {file_end}")
         task = asyncio.create_task(process_chunk(chunk_start, chunk_end, filename, des_file_path))
         tasks.append(task)
