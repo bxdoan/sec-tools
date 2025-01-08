@@ -7,7 +7,6 @@ import unidecode
 from pipenv.patched.safety.constants import YELLOW
 
 ROOT_REPO = os.path.dirname(os.path.abspath(__file__))
-# DES_FOLDER = f'{ROOT_REPO}/../../data/crawler/nhasachmienphi'
 DES_FOLDER = f'D:/books/nsmp'
 
 GREEN = '\033[32m'
